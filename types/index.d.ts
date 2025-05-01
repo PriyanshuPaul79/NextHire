@@ -21,7 +21,7 @@ interface Interview {
   techstack: string[];
   createdAt: string;
   userId: string;
-  type: string;
+  typeOfInterview: string;
   finalized: boolean;
 }
 
@@ -39,10 +39,10 @@ interface User {
 }
 
 interface InterviewCardProps {
-  interviewId?: string;
+  slNo?: string;
   userId?: string;
   role: string;
-  type: string;
+  typeOfInterview: string;
   techstack: string[];
   createdAt?: string;
 }
