@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
   try {
     const { text:questions } = await generateText({
-        model: google("gemini-2.0-pro-exp-02-05"),
+        model: google("gemini-2.0-flash-001"),
         // apiKey: process.env.AI_GOOGLE_API_KEY,
         prompt: `Prepare questions for a job interview.
         The job role is ${role}.
