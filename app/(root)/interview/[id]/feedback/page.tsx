@@ -47,7 +47,7 @@ const Feedback = async ({ params }: RouteParams) => {
 
           {/* Date */}
           <div className="flex flex-row gap-2">
-            <Image src="/calendar.svg" width={22} height={22} alt="calendar" />
+            <Image src="/calendar.png" width={22} height={22} alt="calendar" />
             <p>
               {feedback?.createdAt
                 ? dayjs(feedback.createdAt).format("MMM D, YYYY h:mm A")
