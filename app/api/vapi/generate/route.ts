@@ -1,33 +1,21 @@
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
-import { getRandomInterviewCover } from "@/lib/utils";
+
 import { db } from "@/firebase/admin";
-export async function GET() {
-  return Response.json(
-    {
-      success: true,
-      data: "We are live",
-    },
-    {
-      status: 200,
-    }
-  );
-}
+import { getRandomInterviewCover } from "@/lib/utils";
 
 export async function POST(request: Request) {
-  const { typeOfInterview, role, level, techStack, noOfQuestions, userid } =
-    await request.json();
+  const { type, role, level, techstack, amount, userid } = await request.json();
 
   try {
-    const { text:questions } = await generateText({
-        model: google("gemini-2.0-flash-001"),
-        // apiKey: process.env.AI_GOOGLE_API_KEY,
-        prompt: `Prepare questions for a job interview.
+    const { text: questions } = await generateText({
+      model: google("gemini-2.0-flash-001"),
+      prompt: `Prepare questions for a job interview.
         The job role is ${role}.
         The job experience level is ${level}.
-        The tech stack used in the job is: ${techStack}.
-        The focus between behavioural and technical questions should lean towards: ${typeOfInterview}.
-        The amount of questions required is: ${noOfQuestions}.
+        The tech stack used in the job is: ${techstack}.
+        The focus between behavioural and technical questions should lean towards: ${type}.
+        The amount of questions required is: ${amount}.
         Please return only the questions, without any additional text.
         The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant.
         Return the questions formatted like this:
@@ -37,37 +25,27 @@ export async function POST(request: Request) {
     `,
     });
 
+    const interview = {
+      role: role,
+      type: type,
+      level: level,
+      techstack: techstack.split(","),
+      questions: JSON.parse(questions),
+      userId: userid,
+      finalized: true,
+      coverImage: getRandomInterviewCover(),
+      createdAt: new Date().toISOString(),
+    };
 
-    const interviewInfo = {
-        role,typeOfInterview,level,
-        techStack:techStack.split(','),
-        questions: JSON.parse(questions),
-        userId:userid,
-        finalized:true,
-        coverImage:getRandomInterviewCover(),
-        createdAt: new Date().toISOString()
-    }
+    await db.collection("interviews").add(interview);
 
-    await db.collection('interviews').add(interviewInfo);
-    return Response.json({
-        success:true
-    }, {
-        status:200
-    });
-
-
-  } catch (e) {
-    // console.error("POST /interview error:", e?.message, e);
-
-    return Response.json(
-      {
-        success: false,
-        data:"Internal server error",
-        error: e?.data || e,
-      },
-      {
-        status: 500,
-      }
-    );
+    return Response.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("Error:", error);
+    return Response.json({ success: false, error: error }, { status: 500 });
   }
+}
+
+export async function GET() {
+  return Response.json({ success: true, data: "Thank you!" }, { status: 200 });
 }

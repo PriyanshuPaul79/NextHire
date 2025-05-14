@@ -1,33 +1,39 @@
-import React from "react";
 import dayjs from "dayjs";
-import Image from "next/image";
-import { getRandomInterviewCover } from "@/lib/utils";
-import { Button } from "./ui/button";
 import Link from "next/link";
-import TechIcons from "./TechIcons";
+import Image from "next/image";
 
+import { Button } from "./ui/button";
+// import DisplayTechIcons from "./DisplayTechIcons";
 
+import { cn, getRandomInterviewCover } from "@/lib/utils";
+import { getFeedbackByInterviewId } from "@/lib/actions/general.action";
 
-
-
-
-const InterviewCard = ({
-  slNo,
+const InterviewCard = async ({
+  interviewId,
   userId,
   role,
-  typeOfInterview,
+  type,
   techstack,
-  questions,
   createdAt,
 }: InterviewCardProps) => {
-  const feedback = null as Feedback | null;
-  // if user appers from a mixed of behavior and technical then just normalise it to mixed type
+  const feedback =
+    userId && interviewId
+      ? await getFeedbackByInterviewId({
+          interviewId,
+          userId,
+        })
+      : null;
 
-  const normalisedTypeOfInterview = /mix/gi.test(typeOfInterview)
-    ? "Mixed"
-    : typeOfInterview;
+  const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
 
-  const formatDate = dayjs(
+  const badgeColor =
+    {
+      Behavioral: "bg-light-400",
+      Mixed: "bg-light-600",
+      Technical: "bg-light-800",
+    }[normalizedType] || "bg-light-600";
+
+  const formattedDate = dayjs(
     feedback?.createdAt || createdAt || Date.now()
   ).format("MMM D, YYYY");
 
@@ -35,46 +41,65 @@ const InterviewCard = ({
     <div className="card-border w-[360px] max-sm:w-full min-h-96">
       <div className="card-interview">
         <div>
-          <div className="absolute top-0 right-0 w-fit px-4 py-2 rounded-bl-lg bg-light-400">
-            <p className="badge-text">{typeOfInterview}</p>
+          {/* Type Badge */}
+          <div
+            className={cn(
+              "absolute top-0 right-0 w-fit px-4 py-2 rounded-bl-lg",
+              badgeColor
+            )}
+          >
+            <p className="badge-text ">{normalizedType}</p>
           </div>
+
+          {/* Cover Image */}
           <Image
             src={getRandomInterviewCover()}
-            alt="company image"
-            height={40}
-            width={40}
+            alt="cover-image"
+            width={90}
+            height={90}
             className="rounded-full object-fit size-[90px]"
           />
-          <h3 className="mt-5 capitalize">{role}</h3>
-          <div className="flex flex-row gap-5 mt-2">
-            <Image
-              src="/calendar.png"
-              alt="calender"
-              height={20}
-              width={20}
-            ></Image>
-            <p>{formatDate}</p>
+
+          {/* Interview Role */}
+          <h3 className="mt-5 capitalize">{role} Interview</h3>
+
+          {/* Date & Score */}
+          <div className="flex flex-row gap-5 mt-3">
+            <div className="flex flex-row gap-2">
+              <Image
+                src="/calendar.png"
+                width={22}
+                height={22}
+                alt="calendar"
+              />
+              <p>{formattedDate}</p>
+            </div>
+
             <div className="flex flex-row gap-2 items-center">
-              <Image src="star.svg" alt="star" height={22} width={22} />
-              <p>{feedback?.totalScore || "--- "}/ 100</p>
+              <Image src="/star.svg" width={22} height={22} alt="star" />
+              <p>{feedback?.totalScore || "---"}/100</p>
             </div>
           </div>
 
+          {/* Feedback or Placeholder Text */}
           <p className="line-clamp-2 mt-5">
             {feedback?.finalAssessment ||
-              "You havent taken the interview lets go attend it"}
+              "You haven't taken this interview yet. Take it now to improve your skills."}
           </p>
         </div>
 
         <div className="flex flex-row justify-between">
-          <TechIcons techStack={techstack} />
+          {/* <DisplayTechIcons techStack={techstack} /> */}
+
           <Button className="btn-primary">
             <Link
               href={
-                feedback ? `/interview/${slNo}/feedback` : `/interview/${slNo}`
+                feedback
+                  ? `/interview/${interviewId}/feedback`
+                  : `/interview/${interviewId}`
               }
             >
-              {feedback ? "Check feedback" : "Take the Interview"}
+              {feedback ? "Check Feedback" : "View Interview"}
             </Link>
           </Button>
         </div>
