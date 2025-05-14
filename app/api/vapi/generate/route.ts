@@ -5,7 +5,7 @@ import { db } from "@/firebase/admin";
 import { getRandomInterviewCover } from "@/lib/utils";
 
 export async function POST(request: Request) {
-  const { typeOfInterview, role, level, techStack, noOfQuestions, userid} = await request.json();
+  const { type, role, level, techstack, amount, userid} = await request.json();
 
   try {
     const { text: questions } = await generateText({
@@ -13,9 +13,9 @@ export async function POST(request: Request) {
       prompt: `Prepare questions for a job interview.
         The job role is ${role}.
         The job experience level is ${level}.
-        The tech stack used in the job is: ${techStack}.
-        The focus between behavioural and technical questions should lean towards: ${typeOfInterview}.
-        The amount of questions required is: ${noOfQuestions}.
+        The tech stack used in the job is: ${techstack}.
+        The focus between behavioural and technical questions should lean towards: ${type}.
+        The amount of questions required is: ${amount}.
         Please return only the questions, without any additional text.
         The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant.
         Return the questions formatted like this:
@@ -25,29 +25,20 @@ export async function POST(request: Request) {
     `,
     });
 
-    // const interview = {
-    //   role: role,
-    //   type: type,
-    //   level: level,
-    //   techstack: techstack.split(","),
-    //   questions: JSON.parse(questions),
-    //   userId: userid,
-    //   finalized: true,
-    //   coverImage: getRandomInterviewCover(),
-    //   createdAt: new Date().toISOString(),
-    // };
+    const interview = {
+      role: role,
+      type: type,
+      level: level,
+      techstack: techstack.split(","),
+      questions: JSON.parse(questions),
+      userId: userid,
+      finalized: true,
+      coverImage: getRandomInterviewCover(),
+      createdAt: new Date().toISOString(),
+    };
 
-     const interviewInfo = {
-         role,typeOfInterview,level,
-         techStack:techStack.split(','),
-         questions: JSON.parse(questions),
-         userId:userid,
-         finalized:true,
-         coverImage:getRandomInterviewCover(),
-         createdAt: new Date().toISOString()
-     }
 
-    await db.collection("interviews").add(interviewInfo);
+    await db.collection("interviews").add(interview);
 
     return Response.json({ success: true }, { status: 200 });
   } catch (error) {
