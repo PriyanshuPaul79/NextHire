@@ -28,4 +28,4 @@
 
 ## 📸 Preview
 
-![NextHire Screenshot](public/demo-screenshot.png)
+![NextHire Screenshot](demo.png)
