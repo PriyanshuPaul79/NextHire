@@ -1,6 +1,6 @@
 # NextHire
 
-**NextHire** is a full-stack AI-powered mock interview platform that simulates real-life interview scenarios using advanced voice agents. It’s built with **Next.js (App Router)** and **Tailwind CSS**, integrated with the **Vapi voice AI**, and designed to help candidates practice and prepare under realistic pressure — just like in real interviews.
+**NextHire** is a full-stack AI-powered mock interview platform that simulates real-life interview scenarios using advanced voice agents. It’s built with **Next.js (App Router)** and **Tailwind CSS**, **Typescript**, **GeminiAI** integrated with the **Vapi voice AI**, and designed to help candidates practice and prepare under realistic pressure — just like in real interviews.
 
 ---
 
